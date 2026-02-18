@@ -20,3 +20,10 @@ def get_contents(usertype: str):
     if usertype not in CONTENTS:
         return {"error": "Invalid usertype"}
     return {"contents": CONTENTS[usertype]}
+```
+
+保存したらGitHubにプッシュしてRenderに反映させます。
+```
+git add .
+git commit -m "revert to simple version"
+git push
