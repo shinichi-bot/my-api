@@ -182,8 +182,9 @@
     <div class="popup-selector">
       <label>ユーザータイプ：</label>
       <select id="usertypeSelect" onchange="fetchContents()">
-        <option value="A">A</option>
-        <option value="B">B</option>
+        <option value="推進者">推進者</option>
+        <option value="構築者">構築者</option>
+        <option value="利用者">利用者</option>
       </select>
     </div>
     <div class="popup-list" id="popupList">
@@ -195,14 +196,7 @@
 <script>
   const API_BASE = 'https://my-api-755i.onrender.com/api';
 
-  const CONTENT_META = {
-    contents_1: { desc: 'contents_1 の説明文が入ります', icon: '📄' },
-    contents_2: { desc: 'contents_2 の説明文が入ります', icon: '📊' },
-    contents_3: { desc: 'contents_3 の説明文が入ります', icon: '📁' },
-    contents_4: { desc: 'contents_4 の説明文が入ります', icon: '📌' },
-    contents_5: { desc: 'contents_5 の説明文が入ります', icon: '🔔' },
-    contents_6: { desc: 'contents_6 の説明文が入ります', icon: '💡' },
-  };
+  const ICONS = ['📄', '📊', '📁'];
 
   let isCollapsed = false;
 
@@ -217,22 +211,24 @@
     const listEl = document.getElementById('popupList');
     listEl.innerHTML = '<div class="popup-loading"><div class="spinner"></div><br>読み込み中...</div>';
     try {
-      const res = await fetch(`${API_BASE}?usertype=${usertype}`);
+      const res = await fetch(`${API_BASE}?usertype=${encodeURIComponent(usertype)}`);
       const data = await res.json();
       if (data.error) { listEl.innerHTML = `<div class="popup-loading">⚠️ ${data.error}</div>`; return; }
       listEl.innerHTML = '';
-      data.contents.forEach((name, i) => {
-        const meta = CONTENT_META[name] || { desc: '詳細情報', icon: '📎' };
-        const item = document.createElement('div');
-        item.className = 'popup-item';
-        item.style.animationDelay = `${i * 60}ms`;
-        item.innerHTML = `
-          <div class="popup-item-thumb">${meta.icon}</div>
+      data.contents.forEach((item, i) => {
+        const el = document.createElement('a');
+        el.href = item.url;
+        el.target = '_blank';
+        el.style.textDecoration = 'none';
+        el.className = 'popup-item';
+        el.style.animationDelay = `${i * 60}ms`;
+        el.innerHTML = `
+          <div class="popup-item-thumb">${ICONS[i] || '📎'}</div>
           <div class="popup-item-info">
-            <div class="popup-item-name">${name}</div>
-            <div class="popup-item-desc">${meta.desc}</div>
+            <div class="popup-item-name">${item.name}</div>
+            <div class="popup-item-desc">${item.url}</div>
           </div>`;
-        listEl.appendChild(item);
+        listEl.appendChild(el);
       });
     } catch (err) {
       listEl.innerHTML = '<div class="popup-loading">⚠️ APIに接続できませんでした</div>';
