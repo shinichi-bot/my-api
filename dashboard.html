@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダッシュボード</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2744;
+    --navy-light: #2e3f6e;
+    --accent: #4a90d9;
+    --accent-hover: #3a7bc8;
+    --accent-light: #e8f1fb;
+    --bg: #f0f2f7;
+    --white: #ffffff;
+    --text: #2c3e50;
+    --text-muted: #6b7a99;
+    --border: #dde3ef;
+    --shadow: 0 4px 20px rgba(26,39,68,0.10);
+    --shadow-lg: 0 8px 40px rgba(26,39,68,0.18);
+    --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header {
+    background: var(--navy); color: #fff; height: 48px;
+    display: flex; align-items: center; padding: 0 20px; gap: 16px;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .header-logo { font-family: 'DM Sans', sans-serif; font-size: 18px; font-weight: 600; }
+  .header-title { font-size: 13px; color: rgba(255,255,255,0.7); border-left: 1px solid rgba(255,255,255,0.2); padding-left: 14px; }
+  .header-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .header-btn { background: rgba(255,255,255,0.12); border: none; color: #fff; padding: 5px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+  .header-btn:hover { background: rgba(255,255,255,0.2); }
+  .header-btn.primary { background: var(--accent); }
+  .header-btn.primary:hover { background: var(--accent-hover); }
+
+  .tabs { background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 4px; }
+  .tab { padding: 10px 16px; font-size: 13px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+  .tab:hover { color: var(--accent); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+  main { padding: 32px 28px; max-width: 1200px; margin: 0 auto; }
+
+  .create-section { display: flex; justify-content: center; margin-bottom: 36px; position: relative; }
+  .create-section::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border); z-index: 0; }
+  .btn-create { background: var(--accent); color: #fff; border: none; padding: 12px 32px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; box-shadow: 0 4px 14px rgba(74,144,217,0.35); transition: all 0.2s; }
+  .btn-create:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(74,144,217,0.45); }
+
+  .section-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; overflow: hidden; }
+  .section-header { padding: 16px 20px; font-size: 13px; font-weight: 500; color: var(--text-muted); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .section-body { padding: 20px; }
+
+  .board-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+  .board-thumb { width: 130px; cursor: pointer; transition: transform 0.2s; }
+  .board-thumb:hover { transform: translateY(-2px); }
+  .board-thumb-img { width: 130px; height: 90px; background: linear-gradient(135deg, #e8edf5, #d0d9ea); border-radius: 8px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 22px; transition: border-color 0.2s; }
+  .board-thumb:hover .board-thumb-img { border-color: var(--accent); }
+  .board-thumb-label { font-size: 12px; margin-top: 8px; color: var(--text); }
+  .more-link { margin-left: auto; font-size: 12px; color: var(--accent); cursor: pointer; padding: 12px 20px; display: block; text-align: right; border-top: 1px solid var(--border); text-decoration: none; }
+  .more-link:hover { text-decoration: underline; }
+
+  .support-grid { display: grid; grid-template-columns: 200px 1fr 1fr 1fr; gap: 24px; align-items: start; }
+  .support-banner { background: linear-gradient(135deg, var(--navy), var(--navy-light)); border-radius: 10px; padding: 18px; color: #fff; min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
+  .support-banner-title { font-size: 13px; font-weight: 700; line-height: 1.5; margin-bottom: 8px; }
+  .support-banner-sub { font-size: 11px; opacity: 0.75; line-height: 1.6; }
+  .support-col h4 { font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+  .support-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .support-col ul li a { font-size: 12px; color: var(--accent); text-decoration: none; line-height: 1.4; }
+  .support-col ul li a:hover { text-decoration: underline; }
+
+  /* Popup */
+  .popup-widget { position: fixed; bottom: 24px; right: 24px; width: 280px; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow-lg); overflow: hidden; z-index: 200; border: 1px solid var(--border); }
+  .popup-header { background: var(--navy); color: #fff; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+  .popup-header-title { font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+  .popup-toggle { background: rgba(255,255,255,0.15); border: none; color: #fff; width: 22px; height: 22px; border-radius: 4px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .popup-toggle:hover { background: rgba(255,255,255,0.25); }
+  .popup-body { overflow: hidden; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1); max-height: 400px; }
+  .popup-body.collapsed { max-height: 0; }
+
+  .popup-selector { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+  .popup-selector label { font-size: 11px; color: var(--text-muted); font-weight: 500; white-space: nowrap; }
+  .popup-selector select { font-size: 12px; font-family: inherit; padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; color: var(--text); background: var(--bg); cursor: pointer; outline: none; flex: 1; }
+  .popup-selector select:focus { border-color: var(--accent); }
+
+  .popup-list { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .popup-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--bg); border-radius: 8px; transition: background 0.2s, transform 0.15s; cursor: pointer; animation: fadeIn 0.3s ease both; }
+  .popup-item:hover { background: var(--accent-light); transform: translateX(2px); }
+  .popup-item-thumb { width: 40px; height: 40px; border-radius: 6px; background: linear-gradient(135deg, var(--accent), #6ab0f0); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; }
+  .popup-item-info { flex: 1; min-width: 0; }
+  .popup-item-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .popup-item-desc { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .popup-loading { padding: 20px; text-align: center; font-size: 12px; color: var(--text-muted); }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 6px; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">m</div>
+  <div class="header-title">Excel_PPT出力</div>
+  <div class="header-actions">
+    <button class="header-btn">保存</button>
+    <button class="header-btn primary">編集を終了</button>
+    <button class="header-btn">⚙</button>
+    <button class="header-btn">👤</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active">🏠 ホーム</div>
+  <div class="tab">⊞ ボード一覧</div>
+  <div class="tab">↩ ボードに戻る</div>
+</div>
+
+<main>
+  <div class="create-section">
+    <button class="btn-create">＋ ボードを作成</button>
+  </div>
+
+  <div class="section-card">
+    <div class="section-header">🕐 最近見たボード</div>
+    <div class="section-body">
+      <div class="board-grid">
+        <div class="board-thumb">
+          <div class="board-thumb-img">🖼</div>
+          <div class="board-thumb-label">サンプルボード①</div>
+        </div>
+      </div>
+    </div>
+    <a class="more-link" href="#">もっと見る &raquo;</a>
+  </div>
+
+  <div class="section-card">
+    <div class="section-header">☆ サポートコンテンツ</div>
+    <div class="section-body">
+      <div class="support-grid">
+        <div class="support-banner">
+          <div class="support-banner-title">スタートアップの旅で学ぶ<br>楽しく学びながらゴールを目指そう！</div>
+          <div class="support-banner-sub">📘 ガイドを見る</div>
+        </div>
+        <div class="support-col">
+          <h4>📋 チュートリアル</h4>
+          <ul>
+            <li><a href="#">進め方を見る</a></li>
+            <li><a href="#">基本操作を学ぶ</a></li>
+            <li><a href="#">作りたいボードを見つける (Sample Gallery)</a></li>
+          </ul>
+        </div>
+        <div class="support-col">
+          <h4>👥 コミュニティー</h4>
+          <ul>
+            <li><a href="#">nest Membership</a></li>
+          </ul>
+        </div>
+        <div class="support-col">
+          <h4>🔍 ヘルプ</h4>
+          <ul>
+            <li><a href="#">マニュアルを見る</a></li>
+            <li><a href="#">お問い合わせ</a></li>
+            <li><a href="#">契約関連で連絡する</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Popup Widget -->
+<div class="popup-widget" id="popupWidget">
+  <div class="popup-header" onclick="togglePopup()">
+    <div class="popup-header-title">⭐ おすすめのコンテンツとお知らせ</div>
+    <button class="popup-toggle" id="popupToggleBtn">－</button>
+  </div>
+  <div class="popup-body" id="popupBody">
+    <div class="popup-selector">
+      <label>ユーザータイプ：</label>
+      <select id="usertypeSelect" onchange="fetchContents()">
+        <option value="A">A</option>
+        <option value="B">B</option>
+      </select>
+    </div>
+    <div class="popup-list" id="popupList">
+      <div class="popup-loading"><div class="spinner"></div><br>読み込み中...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'https://my-api-755i.onrender.com/api';
+
+  const CONTENT_META = {
+    contents_1: { desc: 'contents_1 の説明文が入ります', icon: '📄' },
+    contents_2: { desc: 'contents_2 の説明文が入ります', icon: '📊' },
+    contents_3: { desc: 'contents_3 の説明文が入ります', icon: '📁' },
+    contents_4: { desc: 'contents_4 の説明文が入ります', icon: '📌' },
+    contents_5: { desc: 'contents_5 の説明文が入ります', icon: '🔔' },
+    contents_6: { desc: 'contents_6 の説明文が入ります', icon: '💡' },
+  };
+
+  let isCollapsed = false;
+
+  function togglePopup() {
+    isCollapsed = !isCollapsed;
+    document.getElementById('popupBody').classList.toggle('collapsed', isCollapsed);
+    document.getElementById('popupToggleBtn').textContent = isCollapsed ? '＋' : '－';
+  }
+
+  async function fetchContents() {
+    const usertype = document.getElementById('usertypeSelect').value;
+    const listEl = document.getElementById('popupList');
+    listEl.innerHTML = '<div class="popup-loading"><div class="spinner"></div><br>読み込み中...</div>';
+    try {
+      const res = await fetch(`${API_BASE}?usertype=${usertype}`);
+      const data = await res.json();
+      if (data.error) { listEl.innerHTML = `<div class="popup-loading">⚠️ ${data.error}</div>`; return; }
+      listEl.innerHTML = '';
+      data.contents.forEach((name, i) => {
+        const meta = CONTENT_META[name] || { desc: '詳細情報', icon: '📎' };
+        const item = document.createElement('div');
+        item.className = 'popup-item';
+        item.style.animationDelay = `${i * 60}ms`;
+        item.innerHTML = `
+          <div class="popup-item-thumb">${meta.icon}</div>
+          <div class="popup-item-info">
+            <div class="popup-item-name">${name}</div>
+            <div class="popup-item-desc">${meta.desc}</div>
+          </div>`;
+        listEl.appendChild(item);
+      });
+    } catch (err) {
+      listEl.innerHTML = '<div class="popup-loading">⚠️ APIに接続できませんでした</div>';
+    }
+  }
+
+  fetchContents();
+</script>
+</body>
+</html>
